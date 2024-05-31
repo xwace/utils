@@ -47,24 +47,24 @@ typedef void (*BatchDistFunc)(void*);
 void main() {
 
     void* input;
-    float val(2.3);
-    uchar uval(34);
-    string s("only you");
+    float float_val(2.3);
+    uchar uchar_val(34);
+    string string_val("only you");
     BatchDistFunc func;
     
     func= (BatchDistFunc)func_u; 
-    input = (void*)&uval;
+    input = (void*)&uchar_val;
     func(input);
 
     func = (BatchDistFunc)func_f;
-    input = (void*)&val;
+    input = (void*)&float_val;
     func(input);
     
     func = (BatchDistFunc)func_s;
-    input = (void*)&s;
+    input = (void*)&string_val;
     func(input);
 
     func = (BatchDistFunc)&func_ff;
-    input = (void*)&val;
+    input = (void*)&float_val;
     func(input);//当函数可以忽略返回值时，可以用void擦除返回值类型
 }
