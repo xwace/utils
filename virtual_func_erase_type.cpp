@@ -76,6 +76,13 @@ class Circle  {
   double radius_;
 };
 
+/*
+  模板类无法自动推断类型，模板函数可以自动推断类型
+  template<typename T>void func(T*t)
+  调用：int val(2);func(&val)正确。
+  template<typename T>struct foo{ func(T*t){}}
+  实例化：foo m(&val)错误。
+*/
 int main() {
   Square s{1.0};
   Rectangle r{1.0, 2.0};
