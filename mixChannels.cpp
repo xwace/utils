@@ -98,6 +98,7 @@ void mixChannels(const Mat* src, size_t nsrcs, Mat* dst, size_t ndsts, const int
     uchar** ptrs = (uchar**)(arrays + nsrcs + ndsts);
     const uchar** srcs = (const uchar**)(ptrs + nsrcs + ndsts + 1);
     uchar** dsts = (uchar**)(srcs + npairs);
+    //tab可以理解为vector<tuple<int,int,int,int>>绑定第j张源图，及其第k通道，第n张目标图，及目标图第m通道
     int* tab = (int*)(dsts + npairs);//tab存放npair与图像关系
     int* sdelta = (int*)(tab + npairs * 4), * ddelta = sdelta + npairs;
 
