@@ -118,7 +118,7 @@ void mixChannels(const Mat* src, size_t nsrcs, Mat* dst, size_t ndsts, const int
                     break;
             CV_Assert(j < nsrcs && src[j].depth() == depth);
             //i0为在原图+目标图所有通道中的下标，需转为第n图第n通道
-            //tab[4i]表示i0通道对应第n张源图,tab[4i+1]存放io通道转为对应第n张源图的第n通道
+            //tab[4i]表示i0通道对应第n张源图,tab[4i+1]存放io通道对应第n张源图的第n通道
             tab[i * 4] = (int)j; tab[i * 4 + 1] = (int)(i0 * esz1);
             sdelta[i] = src[j].channels();
         }
