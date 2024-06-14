@@ -117,8 +117,8 @@ void mixChannels(const Mat* src, size_t nsrcs, Mat* dst, size_t ndsts, const int
                 if (i0 < src[j].channels())
                     break;
             CV_Assert(j < nsrcs && src[j].depth() == depth);
-            //i0为在原图+目标图所有通道中的下标，需转为第n图第n通道
-            //tab[4i]表示i0通道对应第n张源图,tab[4i+1]存放io通道对应第n张源图的第n通道
+            //i0为在原图+目标图所有通道中的下标，需转为第n图第m通道
+            //tab[4i]表示i0通道在第n张源图,tab[4i+1]存放io通道对应第n张源图的第m通道
             tab[i * 4] = (int)j; tab[i * 4 + 1] = (int)(i0 * esz1);
             sdelta[i] = src[j].channels();
         }
@@ -132,8 +132,9 @@ void mixChannels(const Mat* src, size_t nsrcs, Mat* dst, size_t ndsts, const int
             if (i1 < dst[j].channels())
                 break;
         CV_Assert(i1 >= 0 && j < ndsts && dst[j].depth() == depth);
-        //tab[4i+2]表示i1通道对应第n张目标图,tab[4i+3]对应第n张目标图的第n通道
-        //ptrs将源图+目标图统一存放在数组中，nsrcs张源图，ndsts目标图，所以i1的转为第n目标图后，还要加上nsrcs，转为对应ptrs数组中的目标图下标
+        //tab[4i+2]表示i1通道在第n张目标图,tab[4i+3]表示第n张目标图的第m通道
+        //ptrs[nsrcs+ndsts]将源图,目标图统一存放在数组中，nsrcs张源图，ndsts目标图，
+        //所以i1的转为第n目标图后，还要加上nsrcs，转为对应ptrs数组中的目标图下标
         tab[i * 4 + 2] = (int)(j + nsrcs); tab[i * 4 + 3] = (int)(i1 * esz1);
         ddelta[i] = dst[j].channels();
     }
