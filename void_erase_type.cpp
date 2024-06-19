@@ -42,6 +42,11 @@ void func_s(const string* s) {
     cout << "s: " << *s << endl;
 }
 
+void func_void(void* p){
+    string* p_ = (string*)p;
+    cout<<p_<<endl;
+}
+
 typedef void (*BatchDistFunc)(void*);
 
 void main() {
@@ -51,7 +56,8 @@ void main() {
     uchar uchar_val(34);
     string string_val("only you");
     BatchDistFunc func;
-    
+
+    //1.擦除函数指针类型，调用不同函数
     func= (BatchDistFunc)func_u; 
     input = (void*)&uchar_val;
     func(input);
@@ -67,4 +73,8 @@ void main() {
     func = (BatchDistFunc)&func_ff;
     input = (void*)&float_val;
     func(input);//当函数可以忽略返回值时，可以用void擦除返回值类型
+
+    //2.擦除函数不同的输入变量类型，函数内恢复类型
+    input = (void*)&string_val;
+    func_void(input);
 }
