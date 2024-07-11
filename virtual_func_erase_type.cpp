@@ -3,7 +3,7 @@
 #include <memory>
 
 class Area {
- public:
+public:
   template <typename T> 
     void  Add(T* shape)  { 
         shape_.emplace_back(new Wrapper(shape)); 
@@ -14,41 +14,44 @@ class Area {
         std::cout << elem->GetArea() << "\n";
       }
     }
- private:
-  class MyShape {
- public:
-  virtual double GetArea() const = 0;
-  virtual ~MyShape() {}
-};
 
-template<typename T>
-class Wrapper : public MyShape {
- public:
-  Wrapper(T *t) : t_(t) {}
-  double GetArea() const {
-    return t_->GetArea();
-  }
+/************************************/
  private:
-  T *t_ = nullptr;
-};
+   class MyShape {
+   public:
+     virtual double GetArea() const = 0;
+     virtual ~MyShape() {}
+   };
 
-std::vector<MyShape*> shape_;
+   template<typename T>
+   class Wrapper : public MyShape {
+   public:
+     Wrapper(T *t) : t_(t) {}
+     double GetArea() const {
+       return t_->GetArea();
+     }
+   private:
+     T *t_ = nullptr;
+   };
+/*************************************/
+
+  std::vector<MyShape*> shape_;
 };
 
 class MyShape {
- public:
+public:
   virtual double GetArea() const = 0;
   virtual ~MyShape() {}
 };
 
 class Square {
- public:
+public:
   Square(double side) : side_(side) {}
 
   double GetArea() const {
     return side_ * side_;
   }
- private:
+private:
   double side_;
 };
 
