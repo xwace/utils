@@ -5,6 +5,7 @@ cv::Mat result = (~mat2)(r1)&(mat2)(r2);
 
 cout<<"mm: "<<(~mat2)(r1)<<" "<<(mat2)(r2)<<endl;
 cout<<"result: "<<result<<endl;
+//result:0,0,255,0,0,255
 
 /*地图从Mat转为二维枚举容器*/
 cv::Mat src_32s;
