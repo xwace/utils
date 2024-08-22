@@ -47,3 +47,9 @@ float medianPartition(int* ofs,int* vals, int a, int b)
 
     return vals[ofs[middle]];
 }
+
+int main(){
+    int ofs[5] = { 0,1,2,3,4 };
+    int vals[5] = { 17,11,2,13,4 };
+    medianPartition(ofs, vals, 0, 4);
+}
