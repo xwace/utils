@@ -8,6 +8,16 @@
 static int sign(double number) {
     return (number > 0) ? 1 : ((number < 0) ? -1 : 0);
 }
+
+static void lineEquationDeterminedByPoints(const cv::Point2f &p, const cv::Point2f &q,
+                                           double &a, double &b, double &c) {
+    CV_Assert(areEqualPoints(p, q) == false);
+
+    a = q.y - p.y;
+    b = p.x - q.x;
+    c = ((-p.y) * b) - (p.x * a);
+}
+
 static bool areOnTheSameSideOfLine(const cv::Point2f &p1, const cv::Point2f &p2,
                                    const cv::Point2f &a, const cv::Point2f &b) {
     double a1, b1, c1;
