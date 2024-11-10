@@ -3,3 +3,5 @@
 2.maxSlideWindow滑动窗口最大值的deque<idx,val>解法
 
 3.AreOnTheSameSideOfLine判断给定两点直线，p1p2是否在直线的同一侧
+
+4.sqrt_angle_lookupTable 输入米制坐标，转换为node点，Mat存储对应坐标的平方根值
