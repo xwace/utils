@@ -1,3 +1,10 @@
+/*
+pt2-pt1向量有以下四种形式:其中↙↖，dy取反，pt1和pt2交换
+↘↙
+↗↖
+
+*/
+
 #define XY_ONE 65536
 #define XY_SHIFT 16
 void m_ellipse2Poly(Point2d center, Size2d axes, int angle,
