@@ -7,5 +7,3 @@
 4.sqrt_angle_lookupTable 输入米制坐标，转换为node点，Mat存储对应坐标的平方根值
 
 5.ellipseExc.cpp椭圆划分成不同的线段，画直线填充
-
-6.atan2_table制表给圆、atan，用时直接查表
