@@ -7,3 +7,5 @@
 4.sqrt_angle_lookupTable 输入米制坐标，转换为node点，Mat存储对应坐标的平方根值
 
 5.ellipseExc.cpp椭圆划分成不同的线段，画直线填充
+
+6.geometry.cpp所有和几何相关的函数：点到直线距离等
