@@ -12,3 +12,20 @@ static double distanceFromPointToLine(const cv::Point2f &a, const cv::Point2f &l
     return (denominator != 0) ? (nominator / denominator)
                               : 0;
 }
+
+std::vector<cv::Point> BresenhemnLine(cv::Point p1, cv::Point p2)
+{
+    std::vector<cv::Point> output_line;
+    std::vector<cv::Point> rect_pts{p1, p2};
+    cv::Rect rect = cv::boundingRect(rect_pts);
+    cv::Point offset{rect.x, rect.y};
+    cv::Mat src(rect.height, rect.width, 0, cv::Scalar(0));
+
+    cv::line(src, p1 - offset, p2 - offset, 1);
+    cv::findNonZero(src, output_line);
+
+    for (auto &pt : output_line)
+        pt = pt + offset;
+
+    return output_line;
+}
