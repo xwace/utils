@@ -1144,10 +1144,9 @@ constexpr E& operator^=(E& lhs, E rhs) noexcept {
 
 /*****************************************************************************************
 	Author:xw  2025-8-16
-	
 ******************************************************************************************/
-#define READ_ENUM_FROM_FILE
-#define SAVE_ENUM
+// #define READ_ENUM_FROM_FILE
+// #define SAVE_ENUM
 #ifndef READ_ENUM_FROM_FILE
 #define ENUMSTR(format) std::string(magic_enum_simple::EnumName(format)).c_str()
 namespace magic_enum_simple
@@ -1175,7 +1174,7 @@ namespace magic_enum_simple
     std::size_t start = 0;
     for (std::size_t i = name.size(); i > 0; --i)
     {
-      if (end != 0 && name[i] == ':')
+      if (end != 0 && name[i] == '=')
       {
         start = i + 1;
         break;
@@ -1244,7 +1243,7 @@ namespace magic_enum_simple
     std::string key_name(names[0]);
 
     std::vector<std::string> values(names.begin() + 1, names.end());
-    std::string output_filename = "/home/devel/mstf/modules/master_pnc/pnc_interface/enumStrs.yaml";
+    std::string output_filename = "/home/devel/mstf/modules/master_pnc/pnc_interface/enumStrs.yaml";// /userdata/LOGS/enumStrs.yaml
 
     if (delete_older_file == 0)
     {
