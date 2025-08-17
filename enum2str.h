@@ -689,7 +689,7 @@ constexpr int reflected_max() noexcept {
   if constexpr (S == enum_subtype::flags) {
     return std::numeric_limits<U>::digits - 1;
   } else {
-    constexpr auto lhs = range_max<E>::value;
+    constexpr auto lhs = range_max<E>::value;//std::integral_constant<int, MAGIC_ENUM_RANGE_MAX> {}
     constexpr auto rhs = (std::numeric_limits<U>::max)();
 
     if constexpr (cmp_less(lhs, rhs)) {
@@ -1142,6 +1142,14 @@ constexpr E& operator^=(E& lhs, E rhs) noexcept {
 
 #endif // NEARGYE_MAGIC_ENUM_HPP
 
+/*****************************************************************************************
+	Author:xw  2025-8-16
+	
+******************************************************************************************/
+#define READ_ENUM_FROM_FILE
+#define SAVE_ENUM
+#ifndef READ_ENUM_FROM_FILE
+#define ENUMSTR(format) std::string(magic_enum_simple::EnumName(format)).c_str()
 namespace magic_enum_simple
 {
   constexpr std::size_t kEnumMaxIndex = 32;
@@ -1153,7 +1161,7 @@ namespace magic_enum_simple
   }
 
   template <auto V>
-  constexpr std::string_view sig()
+  constexpr auto sig()
   {
     return __PRETTY_FUNCTION__;
   }
@@ -1161,7 +1169,7 @@ namespace magic_enum_simple
   template <auto V>
   constexpr std::string_view EnumName()
   {
-    auto name = sig<V>();
+    std::string_view name = sig<V>();
 
     std::size_t end = 0;
     std::size_t start = 0;
@@ -1172,11 +1180,16 @@ namespace magic_enum_simple
         start = i + 1;
         break;
       }
-      if (name[i] == ';')
+      if (name[i] == ']')
       {
         end = i;
       }
     }
+
+    //末尾不是字母说明这个不是枚举量
+    char end_char = *(name.data() + end - 1);
+    if ('0' <= end_char and end_char <= '9')
+      return {};
 
     return std::string_view(name.data() + start, end - start);
   }
@@ -1195,12 +1208,144 @@ namespace magic_enum_simple
     return arr;
   }
 
+  #ifdef SAVE_ENUM
+  static int delete_older_file = 0;
+  static std::vector<std::string> enum_typename; 
+
   template <typename E>
-  constexpr std::string_view EnumName(const E v)
+  constexpr auto GetHeader(std::vector<std::string_view> &valid_names)
   {
+    std::string_view header = __PRETTY_FUNCTION__;
+    auto start = header.rfind('=') + 2;
+    valid_names.push_back(std::string_view(header.data() + start, header.size() - start - 1));
+  }
+
+  template <typename E>
+  constexpr auto GetEnumNames(const E v)
+  {
+    auto names = EnumNames<E>();
+    std::vector<std::string_view> valid_names;
+    GetHeader<E>(valid_names);
+
+    for (auto name : names)
+    {
+      if (name.empty())
+        continue;
+      valid_names.push_back(name);
+    }
+
+    return valid_names;
+  }
+
+  template <typename E>
+  void SaveEnumNamesYAML(E v)
+  {
+    auto names = GetEnumNames(v);
+    std::string key_name(names[0]);
+
+    std::vector<std::string> values(names.begin() + 1, names.end());
+    std::string output_filename = "/home/devel/mstf/modules/master_pnc/pnc_interface/enumStrs.yaml";
+
+    if (delete_older_file == 0)
+    {
+      std::string cmd = "rm " + output_filename;
+      int ret = system(cmd.c_str());
+    }
+
+    if (std::find(enum_typename.begin(), enum_typename.end(), key_name) != enum_typename.end())
+    {
+      return;
+    }
+    else
+    {
+      enum_typename.push_back(key_name);
+    }
+
+    std::ofstream file(output_filename, std::ios::app);
+    file << key_name << " ";
+    for (auto value : values)
+      file << value << " ";
+    file << "\n";
+    file.close();
+
+    delete_older_file++;
+  }
+  #endif
+
+  template <typename E>
+  constexpr std::string_view EnumName(const E& v)
+  {
+    #ifdef SAVE_ENUM
+    SaveEnumNamesYAML(v);
+    #endif
     return EnumNames<E>()[static_cast<std::size_t>(v) - kEnumMinIndex];
   }
 }
+#endif
 
-#define ENUMSTR(format) std::string(magic_enum_simple::EnumName(format)).c_str()
-#define ENUM_2_STR(format) std::string(magic_enum::enum_name(format)).c_str()
+#ifdef READ_ENUM_FROM_FILE
+#define ENUMSTR(format) std::string(EnumName(format)).c_str()
+static std::map<std::string, std::vector<std::string>> enum_map;
+
+template <typename E>
+constexpr auto GetHeader(std::string_view &key_name)
+{
+  std::string_view header = __PRETTY_FUNCTION__;
+  auto start = header.find('=') + 2;
+  int end = start;
+  for (size_t i = start; i < header.size(); i++)
+  {
+    if (header[i] == ';')
+    {
+      end = i;
+      break;
+    }
+  }
+  key_name = std::string_view(header.data() + start, end - start);
+}
+
+std::map<std::string, std::vector<std::string>> EnumStrsFromFile()
+{
+  std::string in_filename = "/home/devel/mstf/modules/master_pnc/pnc_interface/enumStrs.yaml";
+  std::ifstream fs(in_filename);
+  std::string line_str, key;
+  std::map<std::string, std::vector<std::string>> enum_map;
+  bool key_receive = false;
+
+  while (getline(fs, line_str))
+  {
+    std::stringstream ss(line_str);
+    key_receive = false;
+
+    while (!ss.eof())
+    {
+      std::string x;
+      ss >> x;
+      if (!key_receive)
+      {
+        key_receive = true;
+        key = x;
+        continue;
+      }
+      enum_map[key].push_back(x);
+    }
+  }
+  return enum_map;
+}
+
+template <typename E>
+std::string EnumName(const E &v)
+{
+  std::string_view key_name;
+  GetHeader<E>(key_name);
+  if (enum_map.empty())
+  {
+    enum_map = EnumStrsFromFile();
+  }
+
+  if (enum_map.count(std::string(key_name)))
+    return enum_map[std::string(key_name)][static_cast<std::size_t>(v)];
+  else
+    return {};
+}
+#endif //define read enum from file
