@@ -1146,7 +1146,7 @@ constexpr E& operator^=(E& lhs, E rhs) noexcept {
 	Author:xw  2025-8-16
 ******************************************************************************************/
 // #define READ_ENUM_FROM_FILE
-// #define SAVE_ENUM
+#define SAVE_ENUM
 #ifndef READ_ENUM_FROM_FILE
 #define ENUMSTR(format) std::string(magic_enum_simple::EnumName(format)).c_str()
 namespace magic_enum_simple
@@ -1176,7 +1176,7 @@ namespace magic_enum_simple
     {
       if (end != 0 && name[i] == '=')
       {
-        start = i + 1;
+        start = i + 2;
         break;
       }
       if (name[i] == ']')
@@ -1207,9 +1207,9 @@ namespace magic_enum_simple
     return arr;
   }
 
-  #ifdef SAVE_ENUM
+#ifdef SAVE_ENUM
   static int delete_older_file = 0;
-  static std::vector<std::string> enum_typename; 
+  static std::vector<std::string> enum_typename;
 
   template <typename E>
   constexpr auto GetHeader(std::vector<std::string_view> &valid_names)
@@ -1243,7 +1243,7 @@ namespace magic_enum_simple
     std::string key_name(names[0]);
 
     std::vector<std::string> values(names.begin() + 1, names.end());
-    std::string output_filename = "/home/devel/mstf/modules/master_pnc/pnc_interface/enumStrs.yaml";// /userdata/LOGS/enumStrs.yaml
+    std::string output_filename = "/home/devel/mstf/modules/master_pnc/pnc_interface/enumStrs.h"; // /userdata/LOGS/enumStrs.yaml
 
     if (delete_older_file == 0)
     {
@@ -1261,22 +1261,26 @@ namespace magic_enum_simple
     }
 
     std::ofstream file(output_filename, std::ios::app);
-    file << key_name << " ";
-    for (auto value : values)
-      file << value << " ";
-    file << "\n";
+    std::string code = "std::string_view enum_to_string(" + key_name + " value) {\n";
+    code += "  switch(value) {\n";
+    for (int i = 0; i < values.size(); i++)
+    {
+      code += "    case " + std::to_string(i) + ": return \"" + values[i] + "\";\n";
+    }
+    code += "    default: return \"UNKNOWN\";\n  }\n}\n";
+    file << code;
     file.close();
 
     delete_older_file++;
   }
-  #endif
+#endif
 
   template <typename E>
-  constexpr std::string_view EnumName(const E& v)
+  constexpr std::string_view EnumName(const E &v)
   {
-    #ifdef SAVE_ENUM
+#ifdef SAVE_ENUM
     SaveEnumNamesYAML(v);
-    #endif
+#endif
     return EnumNames<E>()[static_cast<std::size_t>(v) - kEnumMinIndex];
   }
 }
