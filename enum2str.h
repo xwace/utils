@@ -1262,7 +1262,7 @@ namespace magic_enum_simple
 
     std::ofstream file(output_filename, std::ios::app);
     std::string code = "std::string_view enum_to_string(" + key_name + " value) {\n";
-    code += "  switch(value) {\n";
+    code += "  switch((int)value) {\n";
     for (int i = 0; i < values.size(); i++)
     {
       code += "    case " + std::to_string(i) + ": return \"" + values[i] + "\";\n";
