@@ -1534,16 +1534,16 @@ constexpr E& operator^=(E& lhs, E rhs) noexcept {
 #undef MAGIC_ENUM_FOR_EACH_256
 
 /*****************************************************************************************
-	Coperight (C), 2017-2027
+	Coperight (C), 2017-2027, Shenzhen YXRobot Co., Ltd.
 	
-	Author:wxw  2025-8-16
+	Author:wuxingwei  2025-8-16
 	
 ******************************************************************************************/
 namespace wxw_enum
 {
-  static inline int is_open_new_file = true;
+  static inline int open_new_file_counter = 0;
   static std::vector<std::string> enum_typename;
-  static std::string save_path = "/home/devel/mstf/test/build/enumStrs.h"; // /userdata/LOGS/enumStrs.yaml
+  static std::string save_path = "../build/enumStrs.h";
 
   template <typename E>
   constexpr auto GetHeader(std::string &key_name)
@@ -1578,6 +1578,9 @@ namespace wxw_enum
     }
 
     reverse(key_name.begin(), key_name.end());
+
+    if (!key_name.empty() && key_name[0] == '<')
+      key_name = std::to_string(open_new_file_counter);
   }
 
   template <typename E>
@@ -1690,7 +1693,7 @@ namespace wxw_enum
     std::vector<std::string> values(names.begin(), names.end());
     std::string output_filename = save_path;
 
-    if (is_open_new_file)
+    if (open_new_file_counter == 0)
     {
       std::string cmd = "rm " + output_filename;
       int ret = system(cmd.c_str());
@@ -1706,7 +1709,7 @@ namespace wxw_enum
     }
 
     std::ofstream file(output_filename, std::ios::app);
-    if (is_open_new_file)
+    if (open_new_file_counter == 0)
     {
       file << BoilerPlate();
     }
@@ -1716,7 +1719,7 @@ namespace wxw_enum
     file << code;
     file.close();
 
-    is_open_new_file = false;
+    open_new_file_counter++;
   }
 
   template <typename E>
@@ -1732,7 +1735,7 @@ namespace wxw_enum
 
 } // namespace wxw_enum
 
-#define GEN_ENUM_CODE
+//#define GEN_ENUM_CODE
 #ifndef GEN_ENUM_CODE
 #define ENUMSTR(format) std::string(magic_enum::enum_name(format)).c_str()
 #else
