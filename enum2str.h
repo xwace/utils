@@ -1534,7 +1534,7 @@ constexpr E& operator^=(E& lhs, E rhs) noexcept {
 #undef MAGIC_ENUM_FOR_EACH_256
 
 /*****************************************************************************************
-	Coperight (C), 2017-2027, Shenzhen YXRobot Co., Ltd.
+	Coperight (C), 2017-2027
 	
 	Author:wxw  2025-8-16
 	
